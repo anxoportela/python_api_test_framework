@@ -1,5 +1,10 @@
 ## 🐍 **Framework de Pruebas de API en Python** 🚀
 
+[![Español](https://img.shields.io/badge/Language-Spanish-red)](README.md)
+[![English](https://img.shields.io/badge/Language-English-blue)](README.en.md)
+
+Bienvenido! Escoge tu lenguaje preferido.
+
 ### 🌟 **Descripción del Proyecto**
 
 ¡Bienvenido al **Framework de Pruebas de API en Python**! Esta es una solución todo en uno para automatizar las pruebas de API, gestionar datos de prueba y generar informes interactivos. Construido con Python y varias bibliotecas modernas, este framework te permite:
