@@ -4,48 +4,44 @@ from requests.exceptions import RequestException
 
 class APIClient:
     """
-    A simple API client that provides a method to send HTTP requests using the `requests` library.
-
-    This class is used to interact with APIs, allowing the sending of requests using different HTTP methods
-    (GET, POST, PUT, DELETE, etc.), with support for headers, request bodies, and basic authentication.
-
-    Methods:
-        send_request(method, url, endpoint, headers=None, body=None, auth=None):
-            Sends an HTTP request and returns the response.
+    Clase para gestionar las solicitudes HTTP a una API externa.
+    Esta clase proporciona un método estático para enviar peticiones HTTP de forma flexible,
+    permitiendo especificar el método HTTP, la URL, los encabezados, el cuerpo de la solicitud y la autenticación.
     """
 
     @staticmethod
     def send_request(method, url, endpoint, headers=None, body=None, auth=None):
         """
-        Sends an HTTP request to a specified URL and endpoint.
+        Envía una solicitud HTTP a una API externa.
 
-        Args:
-            method (str): The HTTP method to use (e.g., 'GET', 'POST', 'PUT', 'DELETE').
-            url (str): The base URL for the API.
-            endpoint (str): The API endpoint to append to the base URL.
-            headers (dict, optional): Headers to include in the request. Default is None.
-            body (dict, optional): The JSON body to send with the request. Default is None.
-            auth (tuple, optional): A tuple containing username and password for basic authentication. Default is None.
+        Parámetros:
+        - method (str): El método HTTP a utilizar (por ejemplo, 'GET', 'POST', etc.).
+        - url (str): La URL base del API.
+        - endpoint (str): El endpoint específico que se añadirá a la URL base.
+        - headers (dict, opcional): Los encabezados HTTP que se incluirán en la solicitud. Por defecto es None.
+        - body (dict, opcional): El cuerpo de la solicitud, utilizado en métodos como 'POST' o 'PUT'. Por defecto es None.
+        - auth (tuple, opcional): Los detalles de autenticación en formato (usuario, contraseña). Por defecto es None.
 
-        Returns:
-            response (Response): The response object from the request.
-            If the request fails, returns a dictionary containing the error message.
+        Retorna:
+        - dict: El objeto de respuesta de la solicitud. Si la solicitud es exitosa, devuelve el objeto `response`.
+        - dict: En caso de error, devuelve un diccionario con la clave 'error' y el mensaje del error.
         """
         try:
-            # Combine the base URL and endpoint to form the full URL
+            # Se forma la URL completa concatenando la URL base y el endpoint
             full_url = f"{url}{endpoint}"
 
-            # Send the request using the specified method
+            # Realiza la solicitud HTTP utilizando el método indicado
             response = requests.request(
-                method=method,
-                url=full_url,
-                headers=headers,  # Optional headers
-                json=body,  # Convert the body to JSON (if provided)
-                auth=auth,  # Optional basic authentication
+                method=method,  # Método HTTP (GET, POST, etc.)
+                url=full_url,  # URL completa
+                headers=headers,  # Encabezados de la solicitud, en formato JSON
+                json=body,  # Cuerpo de la solicitud, en formato JSON
+                auth=auth,  # Datos de autenticación
             )
 
-            return response  # Return the response object
+            # Retorna la respuesta de la solicitud
+            return response
 
         except RequestException as e:
-            # Catch any request exceptions (network issues, invalid responses, etc.)
-            return {"error": f"Request failed: {e}"}  # Return an error message if the request fails
+            # Si ocurre un error durante la solicitud, devuelve un diccionario con el error
+            return {"error": f"La solicitud falló: {e}"}

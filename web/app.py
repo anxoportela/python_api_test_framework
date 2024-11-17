@@ -1,4 +1,5 @@
 import dash
+import config
 from dash import dcc, html, dash_table
 import plotly.express as px
 import pandas as pd
@@ -7,102 +8,77 @@ import json
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 
-# Initialize the Dash app with a Bootstrap theme
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX, "https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"])
+# Inicialización de la aplicación Dash con un tema de Bootstrap
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX,
+                                                "https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"])
 
 
-# Function to fetch test data from the database
 def fetch_test_data(execution_id=None):
     """
-    Fetches test data from the 'test_results' table in the database.
-
-    Args:
-    - execution_id (int): The execution ID to filter by (optional).
-    - page (int): The page number for pagination (default is 0).
-    - page_size (int): The number of records per page (default is 10).
-
-    Returns:
-    - pd.DataFrame: A dataframe containing the test results.
+    Obtiene los datos de las pruebas de la base de datos.
+    Si se proporciona un `execution_id`, filtra los resultados por ese ID.
     """
     try:
-        conn = sqlite3.connect('reports/results.db')
+        conn = sqlite3.connect(config.DB_PATH)
         query = "SELECT * FROM test_results"
         if execution_id:
             query += f" WHERE ExecutionId = {execution_id}"
-        df = pd.read_sql(query, conn)
+        df = pd.read_sql(query, conn)  # Se convierte el resultado en un DataFrame de pandas
         conn.close()
         return df
     except Exception as e:
-        print(f"Error fetching test data: {e}")
-        return pd.DataFrame()
+        print(f"Error al obtener los datos de las pruebas: {e}")
+        return pd.DataFrame()  # Si ocurre un error, retorna un DataFrame vacío
 
 
-# Function to fetch execution details from the database
 def fetch_executions():
     """
-    Fetches distinct execution IDs and names from the 'test_executions' table.
-
-    Returns:
-    - pd.DataFrame: A dataframe containing execution details.
+    Obtiene una lista de las ejecuciones de pruebas desde la base de datos.
     """
     try:
-        conn = sqlite3.connect('reports/results.db')
+        conn = sqlite3.connect(config.DB_PATH)
         query = "SELECT DISTINCT ExecutionId, ExecutionName FROM test_executions"
-        df = pd.read_sql(query, conn)
+        df = pd.read_sql(query, conn)  # Se convierte el resultado en un DataFrame de pandas
         conn.close()
         return df
     except Exception as e:
-        print(f"Error fetching executions: {e}")
-        return pd.DataFrame()
+        print(f"Error al obtener las ejecuciones: {e}")
+        return pd.DataFrame()  # Si ocurre un error, retorna un DataFrame vacío
 
 
-# Function to get execution name for a given execution ID
 def get_execution_name(execution_id):
     """
-    Fetches the name of an execution given its ID.
-
-    Args:
-    - execution_id (int): The execution ID.
-
-    Returns:
-    - str: The name of the execution.
+    Obtiene el nombre de la ejecución dada su ID.
     """
     try:
-        conn = sqlite3.connect('reports/results.db')
+        conn = sqlite3.connect(config.DB_PATH)
         query = f"SELECT ExecutionName FROM test_executions WHERE ExecutionId = {execution_id}"
-        df = pd.read_sql(query, conn)
+        df = pd.read_sql(query, conn)  # Se convierte el resultado en un DataFrame de pandas
         conn.close()
         if not df.empty:
             return df['ExecutionName'].iloc[0]
-        return None
+        return None  # Si no se encuentra el nombre, retorna None
     except Exception as e:
-        print(f"Error fetching execution name: {e}")
-        return None
+        print(f"Error al obtener el nombre de la ejecución: {e}")
+        return None  # Si ocurre un error, retorna None
 
 
-# Function to format test duration as a human-readable string
 def format_duration(duration):
     """
-    Formats a duration (in seconds) into a human-readable string.
-
-    Args:
-    - duration (float): The duration in seconds.
-
-    Returns:
-    - str: A formatted string representing the duration (e.g., "2 sec 500 ms").
+    Formatea la duración de la prueba en segundos y milisegundos.
     """
     if duration > 0:
-        seconds = int(duration)  # Whole seconds
-        milliseconds = int((duration - seconds) * 1000)  # Remaining milliseconds
+        seconds = int(duration)
+        milliseconds = int((duration - seconds) * 1000)
         return f"{seconds} sec {milliseconds} ms"
     else:
-        return "0 sec 0 ms"
+        return "0 sec 0 ms"  # Si la duración es 0 o menor, retorna 0 segundos y 0 milisegundos
 
 
-# Define the layout of the app (HTML structure using Dash components)
+# Layout principal de la aplicación, que contiene todos los componentes visuales
 app.layout = html.Div([
     dbc.Container([
-        # Header Row
+        # Fila para el encabezado principal
         dbc.Row([
             dbc.Col(
                 html.H1("🔍 Reporte de Ejecuciones de Pruebas API 🚀",
@@ -112,7 +88,7 @@ app.layout = html.Div([
             ),
         ], style={"marginBottom": "40px"}),
 
-        # Execution Filter Dropdown
+        # Fila para seleccionar la ejecución de prueba
         dbc.Row([
             dbc.Col(
                 html.H4("👨‍💻 Seleccionar Ejecución",
@@ -123,7 +99,7 @@ app.layout = html.Div([
             dbc.Col(
                 dcc.Dropdown(
                     id="execution-filter",
-                    options=[],  # Options will be populated by callback
+                    options=[],  # Las opciones se actualizarán dinámicamente
                     value=None,
                     clearable=False,
                     placeholder="Seleccione una ejecución",
@@ -132,7 +108,7 @@ app.layout = html.Div([
             ),
         ], style={"marginBottom": "40px"}),
 
-        # Cards for displaying test statistics
+        # Fila para mostrar las métricas de pruebas (total, pasadas, fallidas, saltadas, duración promedio)
         dbc.Row([
             dbc.Col(dbc.Card([
                 dbc.CardHeader("📊 Total de Pruebas", style={"backgroundColor": "#34495e", "color": "#fff"}),
@@ -161,13 +137,13 @@ app.layout = html.Div([
             ]), width=2, style={"margin": "0 auto", "borderRadius": "0px"}),
         ], justify="center", style={"marginBottom": "40px"}),
 
-        # Graphs for status distribution and duration histogram
+        # Fila para los gráficos (Distribución de estados de las pruebas y Histograma de duración)
         dbc.Row([
             dbc.Col(dcc.Graph(id='status-distribution-graph', config={'displayModeBar': False}), width=6),
             dbc.Col(dcc.Graph(id='duration-histogram', config={'displayModeBar': False}), width=6),
         ]),
 
-        # Table for displaying test results
+        # Fila para la tabla de resultados de las pruebas
         dbc.Row([
             dbc.Col(dash_table.DataTable(
                 id='test-results-table',
@@ -180,7 +156,7 @@ app.layout = html.Div([
                     {'name': '⏱️ Duration', 'id': 'Duration'}
                 ],
                 style_header={'fontWeight': 'bold', 'textTransform': 'none', 'fontFamily': 'Roboto, sans-serif'},
-                row_selectable='single',
+                row_selectable='single',  # Permite seleccionar filas de la tabla
                 selected_rows=[],
                 style_table={'overflowX': 'auto', 'borderRadius': '0px'},
                 style_cell_conditional=[
@@ -190,6 +166,7 @@ app.layout = html.Div([
                     {'if': {'column_id': 'Duration'}, 'width': '20%'}
                 ],
                 style_data_conditional=[
+                    # Condicionales para cambiar el color de las celdas según el estado de la prueba
                     {'if': {'column_id': 'Status', 'filter_query': '{Status} = "PASSED"'},
                      'backgroundColor': 'green', 'color': 'white'},
                     {'if': {'column_id': 'Status', 'filter_query': '{Status} = "FAILED"'},
@@ -200,7 +177,7 @@ app.layout = html.Div([
             ), width=8, style={'margin': '0 auto'}),
         ], style={"marginBottom": "40px"}),
 
-        # Modal for displaying test details
+        # Modal para mostrar detalles de una prueba seleccionada
         dbc.Modal(
             [
                 dbc.ModalHeader("Detalles del Test", close_button=True),
@@ -213,16 +190,10 @@ app.layout = html.Div([
             id="test-modal",
             is_open=False,
             centered=True,
-            style={
-                'position': 'fixed',
-                'top': '50%',
-                'left': '50%',
-                'transform': 'translate(-50%, -50%)',
-                'borderRadius': '0px',
-            }
+            style={'position': 'fixed', 'top': '50%', 'left': '50%', 'transform': 'translate(-50%, -50%)'}
         ),
 
-        # Footer with contact info
+        # Fila para el pie de página
         dbc.Row([
             dbc.Col(
                 html.Footer(
@@ -236,24 +207,22 @@ app.layout = html.Div([
 ])
 
 
-# Function to handle NaN values for status codes and safely convert to int
 def safe_int(value):
     """
-    Converts a value to integer if it's not NaN. Otherwise, returns a default value (e.g., 0).
+    Convierte el valor dado en un entero seguro, retornando 0 si el valor es NaN o no puede convertirse.
     """
     if pd.isna(value):
-        return 0  # or you can return None or another default value
+        return 0
     try:
         return int(value)
     except ValueError:
-        return 0  # Default value in case of invalid data
+        return 0  # Si ocurre un error al convertir, retorna 0
 
 
-# Callback function to update the report based on selected execution and row clicks
 # noinspection t
 @app.callback(
     [
-        Output("execution-filter", "options"),
+        Output("execution-filter", "options"),  # Actualiza las opciones del dropdown de ejecuciones
         Output("total-tests", "children"),
         Output("passed-tests", "children"),
         Output("failed-tests", "children"),
@@ -268,43 +237,36 @@ def safe_int(value):
         Output("test-details", "children")
     ],
     [
-        Input("execution-filter", "value"),
-        Input("test-results-table", "selected_rows"),
-        Input("close-modal", "n_clicks"),
+        Input("execution-filter", "value"),  # Cuando el usuario selecciona una ejecución
+        Input("test-results-table", "selected_rows"),  # Cuando el usuario selecciona una fila de la tabla
+        Input("close-modal", "n_clicks"),  # Cuando el usuario hace clic en el botón "Cerrar" del modal
     ],
     [State("test-results-table", "data"), State("test-modal", "is_open")]
 )
+
+
 def update_report(execution_id, selected_rows, close_modal_clicks, table_data, is_open):
     """
-    This function updates the entire report including the test statistics,
-    graphs, and details of the selected test.
-
-    Args:
-    - execution_id (int or None): ID of the selected execution.
-    - selected_rows (list): List of selected row indices in the test table.
-    - close_modal_clicks (int): The number of clicks on the close button of the modal.
-    - table_data (list): Data for the test results table.
-    - is_open (bool): Whether the test details modal is open.
-
-    Returns:
-    - List of updated outputs for the Dash components.
+    Esta función maneja la lógica de actualización del reporte cada vez que el usuario interactúa
+    con los filtros, las filas seleccionadas de la tabla o el botón para cerrar el modal.
     """
-    # Fetch available executions and populate dropdown options
+    # Obtener las ejecuciones y actualizar las opciones del filtro
     executions = fetch_executions()
     execution_options = [{'label': exec['ExecutionName'], 'value': exec['ExecutionId']} for _, exec in
                          executions.iloc[::-1].iterrows()]
 
-    # If an execution is selected, fetch relevant test data
     if execution_id:
+        # Si se selecciona una ejecución, obtener los resultados correspondientes
         df_results = fetch_test_data(execution_id)
-        total_tests = len(df_results)
-        passed_tests = len(df_results[df_results['Status'] == 'PASSED'])
-        failed_tests = len(df_results[df_results['Status'] == 'FAILED'])
-        skipped_tests = len(df_results[df_results['Status'] == 'SKIPPED'])
-        avg_duration = df_results['Duration'].mean() if not df_results['Duration'].isnull().all() else 0
-        avg_duration_str = format_duration(avg_duration)
+        total_tests = len(df_results)  # Número total de pruebas
+        passed_tests = len(df_results[df_results['Status'] == 'PASSED'])  # Pruebas pasadas
+        failed_tests = len(df_results[df_results['Status'] == 'FAILED'])  # Pruebas falladas
+        skipped_tests = len(df_results[df_results['Status'] == 'SKIPPED'])  # Pruebas saltadas
+        avg_duration = df_results['Duration'].mean() if not df_results[
+            'Duration'].isnull().all() else 0  # Duración promedio
+        avg_duration_str = format_duration(avg_duration)  # Formato legible de la duración promedio
 
-        # Create status distribution graph
+        # Crear el gráfico de distribución de estados
         status_counts = df_results['Status'].value_counts()
         status_fig = {
             'data': [{
@@ -326,20 +288,20 @@ def update_report(execution_id, selected_rows, close_modal_clicks, table_data, i
             }
         }
 
-        # Create duration histogram
+        # Crear el histograma de duración de las pruebas
         duration_fig = px.histogram(df_results, x='Duration', title="⏱️ Histograma de Duración de Pruebas", nbins=20)
         duration_fig.update_layout(showlegend=False, xaxis_title=None, yaxis_title=None)
 
-        # Format duration for the table, leaving blank for skipped tests
+        # Formatear la duración de las pruebas en la tabla
         df_results['Duration'] = df_results.apply(
             lambda row: format_duration(row['Duration']) if row['Status'] != "SKIPPED" else "",
             axis=1
         )
 
-        # Prepare table data
+        # Preparar los datos para la tabla de resultados
         table_data = df_results[['TestId', 'TestCase', 'Status', 'Duration']].to_dict('records')
 
-        # Handle test details for a selected row
+        # Si hay una fila seleccionada, mostrar los detalles en el modal
         if selected_rows:
             selected_row_data = df_results.iloc[selected_rows[0]]
             error_message = selected_row_data['Error']
@@ -350,13 +312,14 @@ def update_report(execution_id, selected_rows, close_modal_clicks, table_data, i
                         plain_text, responses = error_message.split("Got:", 1)
                         expected_text, got_text = plain_text.split("Expected response:", 1)
 
+                        # Formatear los errores para que sean más legibles
                         expected_json = json.dumps(eval(expected_text.strip()),
                                                    indent=2) if expected_text.strip() else "{}"
                         got_json = json.dumps(eval(responses.strip()), indent=2)
 
                         formatted_error = html.Div([
                             html.Details([
-                                html.Summary("View Expected Response"),
+                                html.Summary("Ver respuesta esperada"),
                                 html.Pre(expected_json, style={
                                     "whiteSpace": "pre-wrap",
                                     "wordBreak": "break-word",
@@ -366,7 +329,7 @@ def update_report(execution_id, selected_rows, close_modal_clicks, table_data, i
                                 })
                             ]),
                             html.Details([
-                                html.Summary("View Actual Response (Got)"),
+                                html.Summary("Ver respuesta obtenida (Got)"),
                                 html.Pre(got_json, style={
                                     "whiteSpace": "pre-wrap",
                                     "wordBreak": "break-word",
@@ -393,7 +356,6 @@ def update_report(execution_id, selected_rows, close_modal_clicks, table_data, i
                         "borderRadius": "5px"
                     })
 
-            # Prepare the modal with the test details
             test_details = html.Div([
                 html.P(f"Test ID: {selected_row_data['TestId']}"),
                 html.P(f"Test Case: {selected_row_data['TestCase']}"),
@@ -402,40 +364,46 @@ def update_report(execution_id, selected_rows, close_modal_clicks, table_data, i
                 html.P(f"URL: {selected_row_data['URL']}"),
                 html.P(f"Endpoint: {selected_row_data['Endpoint']}"),
 
-                # Display Expected Status Code only if it doesn't match Actual Status Code
-                html.P(f"Expected Status Code: {safe_int(selected_row_data['ExpectedStatusCode'])}" if safe_int(
-                    selected_row_data['ExpectedStatusCode']) != safe_int(selected_row_data['ActualStatusCode']) else "",
-                       style={"color": "red" if safe_int(selected_row_data['ExpectedStatusCode']) != safe_int(
-                           selected_row_data['ActualStatusCode']) else ""}),
+                html.P(
+                    f"Expected Status Code: {safe_int(selected_row_data['ExpectedStatusCode'])}"
+                    if selected_row_data['Status'] == "SKIPPED"
+                    else (
+                        f"Expected Status Code: {safe_int(selected_row_data['ExpectedStatusCode'])}"
+                        if safe_int(selected_row_data['ExpectedStatusCode']) != safe_int(
+                            selected_row_data['ActualStatusCode'])
+                        else ""
+                    ),
+                    style={
+                        "color": "red" if selected_row_data['Status'] != "SKIPPED" and safe_int(
+                            selected_row_data['ExpectedStatusCode']) != safe_int(
+                            selected_row_data['ActualStatusCode']) else ""
+                    }
+                ),
 
-                # Change 'Actual Status Code' to 'Status Code' and rename it
                 html.P(f"Status Code: {safe_int(selected_row_data['ActualStatusCode'])}" if selected_row_data[
                                                                                                 'Status'] != "SKIPPED" else ""),
 
-                # Display Duration and Response Size if not Skipped
                 html.P(
                     f"Duration: {selected_row_data['Duration']}" if selected_row_data['Status'] != "SKIPPED" else ""),
                 html.P(f"Response Size: {selected_row_data['ResponseSize']} bytes" if selected_row_data[
                                                                                           'Status'] != "SKIPPED" else ""),
 
-                # Display error message if there's an error and the test is not skipped
                 *([html.Div([html.P("Error:"), formatted_error])] if selected_row_data[
                                                                          'Status'] != "SKIPPED" and formatted_error else []),
             ])
 
-            # If modal is not open, return updated data
+            # Si el modal no está abierto, mostrar los detalles y abrir el modal
             if not is_open:
                 return execution_options, total_tests, passed_tests, failed_tests, skipped_tests, avg_duration_str, status_fig, duration_fig, {
                     'display': 'block'}, {'display': 'block'}, table_data, True, test_details
 
-        # Return updated data when no row is selected
+        # Si no se ha seleccionado ninguna fila, devolver los valores estándar
         return execution_options, total_tests, passed_tests, failed_tests, skipped_tests, avg_duration_str, status_fig, duration_fig, {
             'display': 'block'}, {'display': 'block'}, table_data, False, None
 
-    # Default return if no execution is selected
     return execution_options, 0, 0, 0, 0, 0, {}, {}, {'display': 'none'}, {'display': 'none'}, [], False, None
 
 
-# Run the server to start the app
+# Arrancar la aplicación
 if __name__ == "__main__":
     app.run_server(debug=True)
