@@ -8,11 +8,11 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 
 # Initialize the Dash app with a Bootstrap theme
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX, "https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"])
 
 
 # Function to fetch test data from the database
-def fetch_test_data(execution_id=None, page=0, page_size=10):
+def fetch_test_data(execution_id=None):
     """
     Fetches test data from the 'test_results' table in the database.
 
@@ -29,7 +29,6 @@ def fetch_test_data(execution_id=None, page=0, page_size=10):
         query = "SELECT * FROM test_results"
         if execution_id:
             query += f" WHERE ExecutionId = {execution_id}"
-        query += f" LIMIT {page_size} OFFSET {page * page_size}"
         df = pd.read_sql(query, conn)
         conn.close()
         return df
@@ -175,11 +174,12 @@ app.layout = html.Div([
                 page_size=10,
                 style_cell={'textAlign': 'left', 'fontFamily': 'Arial, sans-serif'},
                 columns=[
-                    {'name': 'Test ID', 'id': 'TestId'},
-                    {'name': 'TestCase', 'id': 'TestCase'},
-                    {'name': 'Status', 'id': 'Status'},
-                    {'name': 'Duration', 'id': 'Duration'}
+                    {'name': '🆔 Test ID', 'id': 'TestId'},
+                    {'name': '📝 Test Case', 'id': 'TestCase'},
+                    {'name': '✅⏭️❌ Status', 'id': 'Status'},
+                    {'name': '⏱️ Duration', 'id': 'Duration'}
                 ],
+                style_header={'fontWeight': 'bold', 'textTransform': 'none', 'fontFamily': 'Roboto, sans-serif'},
                 row_selectable='single',
                 selected_rows=[],
                 style_table={'overflowX': 'auto', 'borderRadius': '0px'},
