@@ -63,7 +63,13 @@ To run the framework's tests, navigate to the `tests/` directory and execute the
 pytest
 ```
 
-This will run the unit tests and provide feedback on the success of each test case.
+or
+
+```bash
+pytest -n <number_of_threads>
+```
+
+This will run the tests and provide feedback on the success of each test case.
 
 ---
 
@@ -83,30 +89,30 @@ Open your browser and go to `http://127.0.0.1:8050/` to view the dashboard.
 
 The framework reads the test data from an Excel file (`test_data.xlsx`) with the following columns in order:
 
-| Column Name         | Description                                                                 |
-|---------------------|-----------------------------------------------------------------------------|
-| **TestId**          | Unique identifier for the test case.                                         |
-| **TestCase**        | Name or description of the test case.                                        |
-| **Run**             | Whether the test should be run (`Yes`/`No`).                                 |
-| **Method**          | HTTP method to be used (GET, POST, PUT, DELETE).                             |
-| **URL**             | The base URL of the API being tested.                                        |
-| **Endpoint**        | The specific endpoint to test, relative to the base URL.                     |
-| **Authorization**   | Type of authorization required (e.g., `Bearer`, `Basic`, or `None`).        |
-| **User**            | Username (if needed for authentication).                                    |
-| **Password**        | Password (if needed for authentication).                                    |
-| **Headers**         | HTTP headers in JSON format (optional).                                     |
-| **Body**            | Request body in JSON format (for POST/PUT requests).                         |
-| **ExpectedStatusCode** | The expected HTTP status code (e.g., `200`, `404`).                       |
-| **ExpectedResponse** | The expected response body (optional, can be empty).                       |
-| **Status**          | The result of the test (`Passed`, `Failed`, or `Skipped`).                   |
-| **Error**           | Any error message encountered during the test (optional).                   |
+| Column Name            | Description                                                            |
+|------------------------|------------------------------------------------------------------------|
+| **TestId**             | Unique identifier for the test case.                                   |
+| **TestCase**           | Name or description of the test case.                                  |
+| **Run**                | Whether the test should be run (`Y`/`N`).                              |
+| **Method**             | HTTP method to be used (GET, POST, PUT, DELETE).                       |
+| **URL**                | The base URL of the API being tested.                                  |
+| **Endpoint**           | The specific endpoint to test, relative to the base URL.               |
+| **Authorization**      | String of Authorization required (e.g., `Bearer`, `Basic`, or `None`). |
+| **User**               | Username (if needed for authentication).                               |
+| **Password**           | Password (if needed for authentication).                               |
+| **Headers**            | HTTP headers in JSON format (optional).                                |
+| **Body**               | Request body in JSON format (for POST/PUT requests).                   |
+| **ExpectedStatusCode** | The expected HTTP status code (e.g., `200`, `404`).                    |
+| **ExpectedResponse**   | The expected response body (optional, can be empty).                   |
+| **Status**             | The result of the test (`Passed`, `Failed`, or `Skipped`).             |
+| **Error**              | Any error message encountered during the test (optional).              |
 
 ---
 
 ### 🧑‍💻 **How Test Data is Used**
 
 - **TestCase**: The description of the test case is logged for clarity.
-- **Run**: This column determines if the test case should be executed. If `Run` is set to `No`, the test is skipped.
+- **Run**: This column determines if the test case should be executed. If `Run` is set to `N`, the test is skipped.
 - **Method**: Defines the HTTP request method to use (e.g., `GET`, `POST`).
 - **URL + Endpoint**: Combined, these form the complete URL for the request. The base `URL` and the specific `Endpoint` will be joined programmatically.
 - **Authorization, User, Password**: These are used for authenticated requests (e.g., with Bearer tokens or Basic Authentication).
