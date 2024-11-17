@@ -63,12 +63,6 @@ To run the framework's tests, navigate to the root directory and execute the fol
 pytest
 ```
 
-or
-
-```bash
-pytest -n <number_of_threads>
-```
-
 This will run the tests and provide feedback on the success of each test case.
 
 ---
