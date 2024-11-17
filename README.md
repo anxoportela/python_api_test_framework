@@ -57,7 +57,7 @@ pip install -r requirements.txt
 
 Before launching the Dash dashboard, it's important to run the tests to generate the data that will be visualized.
 
-To run the framework's tests, navigate to the `tests/` directory and execute the following:
+To run the framework's tests, navigate to the root directory and execute the following:
 
 ```bash
 pytest
