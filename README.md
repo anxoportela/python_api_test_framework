@@ -1,6 +1,6 @@
-# 🐍 **Framework de Pruebas de API en Python** 🚀
+## 🐍 **Framework de Pruebas de API en Python** 🚀
 
-## 🌟 **Descripción del Proyecto**
+### 🌟 **Descripción del Proyecto**
 
 ¡Bienvenido al **Framework de Pruebas de API en Python**! Esta es una solución todo en uno para automatizar las pruebas de API, gestionar datos de prueba y generar informes interactivos. Construido con Python y varias bibliotecas modernas, este framework te permite:
 
@@ -11,7 +11,7 @@
 
 ---
 
-## ⚙️ **Características**
+### ⚙️ **Características**
 
 ✨ **Características clave**:
 
@@ -27,9 +27,9 @@
 
 ---
 
-## 🚀 **Instalación**
+### 🚀 **Instalación**
 
-### **1. Instalar Dependencias**
+#### **1. Instalar Dependencias**
 
 El framework requiere Python 3.12+ y varias dependencias. Para comenzar, clona el repositorio e instala los paquetes necesarios desde el archivo `requirements.txt`.
 
@@ -53,7 +53,7 @@ pip install -r requirements.txt
 
 ---
 
-## 🧪 **Ejecutar Pruebas**
+### 🧪 **Ejecutar Pruebas**
 
 Antes de lanzar el panel de Dash, es importante ejecutar las pruebas para generar los datos que se visualizarán.
 
@@ -67,7 +67,7 @@ Esto ejecutará las pruebas y proporcionará retroalimentación sobre el éxito 
 
 ---
 
-## 🚀 **Lanzar el Panel de Control de Dash** 💻
+### 🚀 **Lanzar el Panel de Control de Dash** 💻
 
 Una vez que las pruebas se han ejecutado y los resultados se han generado, puedes lanzar el panel de informes basado en Dash. Este mostrará los resultados de tus pruebas en una interfaz web interactiva.
 
@@ -79,7 +79,7 @@ Abre tu navegador y accede a `http://127.0.0.1:8050/` para ver el panel.
 
 ---
 
-## 📊 **Formato de los Datos de Prueba** (Excel)
+### 📊 **Formato de los Datos de Prueba** (Excel)
 
 El framework lee los datos de prueba desde un archivo Excel (`test_data.xlsx`) con las siguientes columnas en orden:
 
@@ -103,7 +103,7 @@ El framework lee los datos de prueba desde un archivo Excel (`test_data.xlsx`) c
 
 ---
 
-### 🧑‍💻 **Cómo se Usan los Datos de Prueba**
+#### 🧑‍💻 **Cómo se Usan los Datos de Prueba**
 
 - **TestCase**: La descripción del caso de prueba se registra para mayor claridad.
 - **Run**: Esta columna determina si el caso de prueba debe ejecutarse. Si `Run` está establecido en `N`, la prueba se omite.
@@ -117,7 +117,7 @@ El framework lee los datos de prueba desde un archivo Excel (`test_data.xlsx`) c
 
 ---
 
-## 📁 **Estructura del Proyecto**
+### 📁 **Estructura del Proyecto**
 
 ```bash
 python_api_test_framework/
@@ -152,21 +152,21 @@ python_api_test_framework/
 
 ---
 
-## 🛠️ **Cómo Funciona**
+### 🛠️ **Cómo Funciona**
 
-### **Cliente de API** 📡
+#### 📡 **Cliente de API**
 
 El archivo `api_client.py` maneja las solicitudes y respuestas de la API. Soporta varios métodos HTTP (GET, POST, PUT, DELETE) y almacena los resultados, incluidos los códigos de estado y los tiempos de respuesta.
 
-### **Gestión de Datos de Prueba** 📂
+#### 📂 **Gestión de Datos de Prueba**
 
 Los datos de prueba se leen desde un archivo Excel (`test_data.xlsx`) utilizando el script `excel_reader.py`. Estos datos incluyen típicamente los endpoints de la API, los métodos de solicitud y los resultados esperados. Después de ejecutar las pruebas, los resultados se escriben de nuevo en un archivo Excel utilizando `excel_writer.py`.
 
-### **Gestión de Base de Datos** 🗄️
+#### 🗄️ **Gestión de Base de Datos**
 
 Los resultados de las pruebas se guardan en una base de datos SQLite (`results.db`). El archivo `db_manager.py` se encarga de insertar y recuperar los resultados de las pruebas.
 
-### **Panel de Informes** 📊
+#### 📊 **Panel de Informes**
 
 El archivo `web/app.py` sirve como punto de entrada para el panel web basado en Dash. Este panel proporciona una vista completa de los resultados de las pruebas, incluyendo:
 
@@ -178,13 +178,13 @@ El archivo `web/app.py` sirve como punto de entrada para el panel web basado en 
 
 ---
 
-## 📄 **Licencia**
+### 📄 **Licencia**
 
 Este proyecto está bajo la **Licencia MIT**. Para más detalles, consulta el archivo [LICENSE](LICENSE).
 
 ---
 
-## 📧 **Contacto**
+### 📧 **Contacto**
 
 Para cualquier problema, pregunta o sugerencia, no dudes en contactar con los mantenedores del proyecto:
 
@@ -192,4 +192,4 @@ Para cualquier problema, pregunta o sugerencia, no dudes en contactar con los ma
 
 ---
 
-### 🎉 **¡Disfruta utilizando el Framework de Pruebas de API en Python!** 🎉
+#### 🎉 **¡Disfruta utilizando el Framework de Pruebas de API en Python!** 🎉
