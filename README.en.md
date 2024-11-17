@@ -208,4 +208,10 @@ This project is licensed under the **MIT License**. For more details, see the [L
 
 For any issues, questions, or suggestions, feel free to reach out to the project maintainers:
 
-**Email**: [hello@anxoportela.dev](mailto:hello@anxoportela.dev
+**Email**: [hello@anxoportela.dev](mailto:hello@anxoportela.dev)
+
+---
+
+#### 🎉 **Enjoy using the API Testing Framework in Python!** 🎉
+
+
