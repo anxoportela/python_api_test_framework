@@ -154,8 +154,8 @@ python_api_test_framework/
 ├── config.py                # Global project configuration
 ├── requirements.txt         # List of required dependencies
 ├── LICENSE                  # Project license
-├── README.md                # README file in Spanish
-├── README.en.md             # You're here right now 😅
+├── README.es.md             # README file in Spanish
+├── README.md                # You're here right now 😅
 ```
 
 ---
