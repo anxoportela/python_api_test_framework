@@ -155,7 +155,7 @@ python_api_test_framework/
 ├── requirements.txt         # Lista de dependencias necesarias
 ├── LICENSE                  # Licencia del proyecto
 ├── README.md                # Estas aquí ahora mismo 😅
-
+├── README.en.md             # README en Inglés
 ```
 
 ---
