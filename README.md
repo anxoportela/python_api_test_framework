@@ -181,6 +181,18 @@ El archivo `web/app.py` sirve como punto de entrada para el panel web basado en 
 
 ---
 
+### 📍 Contribución
+
+¡Las contribuciones son bienvenidas! Si deseas contribuir a este proyecto, por favor sigue estos pasos:
+
+1. Haz un fork del proyecto.
+2. Crea una nueva rama para tu feature o bugfix (`git checkout -b feature/nueva-feature`).
+3. Realiza tus cambios y haz commit (`git commit -am 'Agrega nueva funcionalidad'`).
+4. Sube tus cambios a tu fork (`git push origin feature/nueva-feature`).
+5. Crea un pull request.
+
+---
+
 ### 📄 **Licencia**
 
 Este proyecto está bajo la **Licencia MIT**. Para más detalles, consulta el archivo [LICENSE](LICENSE).
