@@ -1,73 +1,73 @@
 import pytest
 import time
+import config
 from core.api_client import APIClient
 from core.db_manager import DBManager
 from core.excel_reader import ExcelReader
 from core.excel_writer import ExcelWriter
 
 
-# Fixture to load test data from an Excel file for the entire test module
 @pytest.fixture(scope="module")
 def test_data():
     """
-    Loads test data from an Excel file (data/test_data.xlsx) to be used across test cases.
+    Carga los datos de prueba desde un archivo Excel y los valida. Si no se encuentran datos en el archivo,
+    se marca la prueba como fallida.
 
-    Returns:
-        list: A list of test cases, each containing the data needed for API requests.
-
-    Raises:
-        pytest.fail: If no data is found in the Excel file.
+    Retorna:
+        list: Lista de casos de prueba cargados desde el archivo Excel.
     """
-    reader = ExcelReader('data/test_data.xlsx')
-    data = reader.load_data()
-    if not data:
-        pytest.fail("No se encontraron datos en el archivo Excel.")  # No data found in Excel
-    return data
+    reader = ExcelReader(config.EXCEL_PATH)  # Inicializa el lector de Excel
+    data = reader.load_data()  # Carga los datos desde la hoja "TestSuite"
+
+    if not data:  # Si no se encontraron datos, falla el test
+        pytest.fail("No se encontraron datos en el archivo Excel.")
+
+    return data  # Retorna los datos cargados
 
 
-# Helper function to prepare headers and authorization based on the test case
 def prepare_headers_and_auth(test_case):
     """
-    Prepares the request headers and authorization method for an API call based on the test case data.
+    Prepara los encabezados HTTP y la autenticación según los datos del caso de prueba.
 
     Args:
-        test_case (TestCase): A single test case object containing necessary details for the request.
+        test_case (APIData): Caso de prueba que contiene los detalles de la solicitud.
 
     Returns:
-        tuple: A tuple containing headers dictionary and authorization credentials (tuple).
-               If no authentication is needed, the auth will be None.
+        tuple: Un diccionario con los encabezados y un valor de autenticación (None o tupla de usuario y contraseña).
     """
     if test_case.Authorization:
+        # Si hay un token de autorización, se añade al encabezado
         headers = test_case.Headers if test_case.Headers else {}
         headers['Authorization'] = test_case.Authorization
         auth = None
     elif test_case.User and test_case.Password:
+        # Si hay usuario y contraseña, se configura la autenticación básica
         headers = test_case.Headers if test_case.Headers else {}
         auth = (test_case.User, test_case.Password)
     else:
+        # Si no hay ninguna de las opciones anteriores, solo se devuelven los encabezados
         headers = test_case.Headers if test_case.Headers else {}
         auth = None
 
     return headers, auth
 
 
-# Helper function to send API request and measure the time taken for the request
 def send_request_and_measure_time(client, test_case, headers, auth):
     """
-    Sends an API request using the provided client and test case, and measures the time taken for the request.
+    Envía una solicitud HTTP utilizando el cliente de la API y mide el tiempo de ejecución.
 
     Args:
-        client (APIClient): The client used to send the request.
-        test_case (TestCase): A test case containing request details (method, URL, body, etc.).
-        headers (dict): Headers to be included in the request.
-        auth (tuple or None): Authentication credentials, or None if no authentication is required.
+        client (APIClient): Instancia del cliente de la API.
+        test_case (APIData): Caso de prueba con los parámetros necesarios para la solicitud.
+        headers (dict): Encabezados HTTP a incluir en la solicitud.
+        auth (tuple or None): Información de autenticación, si es necesario.
 
     Returns:
-        tuple: A tuple containing the response object, the duration of the request in seconds,
-               and the size of the response in bytes.
+        tuple: La respuesta de la API, el tiempo de duración de la solicitud y el tamaño de la respuesta.
     """
-    start_time = time.time()  # Start timing the request
+    start_time = time.time()  # Captura el tiempo antes de la solicitud
     try:
+        # Realiza la solicitud HTTP usando los parámetros proporcionados
         response = client.send_request(
             test_case.Method,
             test_case.URL,
@@ -77,36 +77,37 @@ def send_request_and_measure_time(client, test_case, headers, auth):
             auth=auth
         )
     except Exception as e:
-        pytest.fail(f"API request failed: {e}")  # Fail the test if the request fails
+        pytest.fail(f"API request failed: {e}")  # Si hay un error, falla el test
 
-    end_time = time.time()  # End timing the request
-    duration = end_time - start_time  # Calculate the time taken
-    response_size = len(response.text)  # Get the size of the response in bytes
+    end_time = time.time()  # Captura el tiempo después de la solicitud
+    duration = end_time - start_time  # Calcula la duración de la solicitud
+    response_size = len(response.text)  # Calcula el tamaño de la respuesta
 
     return response, duration, response_size
 
 
-# Helper function to check if the response matches the expected result
 def check_response(response, test_case):
     """
-    Compares the response from the API with the expected result as defined in the test case.
+    Verifica la respuesta de la API comparando el código de estado y el cuerpo de la respuesta con las expectativas.
 
     Args:
-        response (Response): The response object returned from the API call.
-        test_case (TestCase): The test case containing expected status code and response.
+        response (Response): Respuesta de la API obtenida.
+        test_case (APIData): Caso de prueba con los valores esperados.
 
     Returns:
-        tuple: A tuple containing the test result status ('PASSED' or 'FAILED')
-               and an error message (or None if no error).
+        tuple: El estado de la prueba ("PASSED" o "FAILED") y un mensaje de error, si corresponde.
     """
     if response.status_code == test_case.ExpectedStatusCode:
+        # Si el código de estado es el esperado, la prueba pasa
         status = "PASSED"
         error = None
     else:
+        # Si el código de estado no es el esperado, la prueba falla
         status = "FAILED"
         error = f"Expected status code: {test_case.ExpectedStatusCode}, Got: {response.status_code}"
 
     try:
+        # Compara la respuesta con la esperada
         response_body = response.json() if 'application/json' in response.headers.get('Content-Type',
                                                                                       '') else response.text
         if response_body != test_case.ExpectedResponse:
@@ -119,45 +120,45 @@ def check_response(response, test_case):
     return status, error
 
 
-# Main test function that runs all the test cases and logs the results
 def test_api(test_data):
     """
-    Executes API tests based on the provided test data and logs results to a database and an Excel file.
+    Función principal que ejecuta las pruebas API según los datos de prueba cargados desde un archivo Excel.
+
+    Esta función se encarga de realizar las solicitudes a la API, verificar los resultados, guardar los resultados
+    en una base de datos y generar un resumen de las pruebas ejecutadas.
 
     Args:
-        test_data (list): A list of test cases to be executed.
-
-    Logs:
-        - Results to the database.
-        - A summary of the execution to the console.
-        - Updates the results in the Excel file.
+        test_data (list): Lista de datos de prueba cargados desde un archivo Excel.
     """
-    client = APIClient()  # Initialize the API client
-    db_manager = DBManager('reports/results.db')  # Initialize database manager for results
-    db_manager.create_tables()  # Create necessary tables in the database
-    execution_name = f"TestExecution_{time.strftime('%Y%m%d_%H%M%S')}"  # Unique execution name based on current time
-    execution_id = db_manager.insert_test_execution(execution_name)  # Insert the test execution record
+    client = APIClient()  # Crea una instancia del cliente de la API
+    db_manager = DBManager(config.DB_PATH)  # Crea una instancia del gestor de base de datos
+    db_manager.create_tables()  # Crea las tablas necesarias en la base de datos
+
+    # Inserta la ejecución de prueba en la base de datos
+    execution_name = f"TestExecution_{time.strftime('%Y%m%d_%H%M%S')}"
+    execution_id = db_manager.insert_test_execution(execution_name)
     if not execution_id:
-        pytest.fail(
-            "No se pudo crear la ejecución en la base de datos.")  # Fail the test if execution could not be logged
+        pytest.fail("No se pudo crear la ejecución en la base de datos.")
 
-    # Lists to hold durations, response sizes, and individual test results
-    durations = []
-    response_sizes = []
-    results = []
+    durations = []  # Lista para almacenar la duración de cada prueba
+    response_sizes = []  # Lista para almacenar el tamaño de la respuesta de cada prueba
+    results = []  # Lista para almacenar los resultados de las pruebas
 
-    # Loop through all test cases and execute them
     for test_case in test_data:
-        if test_case.Run == "N":  # If 'Run' is "N", the test case is skipped
+        if test_case.Run == "N":  # Si la prueba está marcada como no ejecutarse, se marca como saltada
             status = "SKIPPED"
             error = "Test skipped (Run = N)"
         else:
-            headers, auth = prepare_headers_and_auth(test_case)  # Prepare headers and auth for the request
-            response, duration, response_size = send_request_and_measure_time(client, test_case, headers,
-                                                                              auth)  # Send the request
-            status, error = check_response(response, test_case)  # Check the response against the expected values
+            # Prepara los encabezados y autenticación para la solicitud
+            headers, auth = prepare_headers_and_auth(test_case)
 
-        # Prepare the result dictionary
+            # Envía la solicitud y mide el tiempo
+            response, duration, response_size = send_request_and_measure_time(client, test_case, headers, auth)
+
+            # Verifica la respuesta recibida
+            status, error = check_response(response, test_case)
+
+        # Guarda el resultado de la prueba en la base de datos
         result = {
             "TestId": test_case.TestId,
             "TestCase": test_case.TestCase,
@@ -172,15 +173,13 @@ def test_api(test_data):
             "ResponseSize": response_size if status != "SKIPPED" else None
         }
 
-        # Insert the test result into the database
-        db_manager.insert_test_result(execution_id, result)
+        db_manager.insert_test_result(execution_id, result)  # Inserta el resultado en la base de datos
 
-        # Append the result data for summary reporting
         durations.append(duration)
         response_sizes.append(response_size)
         results.append(result)
 
-    # Prepare a summary of the test execution
+    # Inserta el resumen de las pruebas en la base de datos
     summary = {
         "TotalTests": len(test_data),
         "PassedTests": sum(1 for r in results if r['Status'] == "PASSED"),
@@ -190,10 +189,9 @@ def test_api(test_data):
         "TotalResponseSize": sum(response_sizes),
     }
 
-    # Insert the summary into the database
     db_manager.insert_test_summary(execution_id, summary)
 
-    # Print the execution summary to the console
+    # Imprime un resumen de la ejecución de pruebas
     print("\n--- Resumen de la Ejecución de Pruebas ---")
     print(f"Total de pruebas: {summary['TotalTests']}")
     print(f"Pruebas pasadas: {summary['PassedTests']}")
@@ -202,5 +200,5 @@ def test_api(test_data):
     print(f"Duración promedio: {summary['AvgDuration']:.2f} segundos")
     print(f"Tamaño total de respuestas: {summary['TotalResponseSize']} bytes")
 
-    # Update the Excel file with the test results
-    ExcelWriter('data/test_data.xlsx').update_results(results)
+    # Actualiza los resultados en el archivo Excel
+    ExcelWriter(config.EXCEL_PATH).update_results(results)

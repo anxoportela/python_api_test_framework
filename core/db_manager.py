@@ -3,61 +3,53 @@ import sqlite3
 
 class DBManager:
     """
-    A class to manage interactions with an SQLite database for storing test execution results.
-
-    This class provides methods to:
-    - Connect to the SQLite database.
-    - Create necessary tables to store test execution data.
-    - Insert individual test results, test execution summaries, and test execution metadata.
-
-    Attributes:
-        db_file (str): The path to the SQLite database file.
+    Clase para gestionar las operaciones con una base de datos SQLite.
+    Permite crear tablas, insertar resultados de pruebas y resúmenes de ejecución.
     """
 
     def __init__(self, db_file):
         """
-        Initializes the DBManager with the path to the SQLite database file.
+        Inicializa la clase DBManager con el archivo de base de datos proporcionado.
 
-        Args:
-            db_file (str): Path to the SQLite database file.
+        Parámetros:
+        - db_file (str): Ruta al archivo de base de datos SQLite que se va a utilizar.
         """
         self.db_file = db_file
 
     def _connect(self):
         """
-        Establishes and returns a connection to the SQLite database.
+        Establece una conexión con la base de datos.
 
-        Returns:
-            sqlite3.Connection: The database connection object.
+        Retorna:
+        - conn: Conexión a la base de datos SQLite.
         """
         return sqlite3.connect(self.db_file)
 
     def create_tables(self):
         """
-        Creates the necessary tables in the database for storing test execution data.
+        Crea las tablas necesarias en la base de datos si no existen.
+        Estas tablas son:
+        - test_executions: Para registrar las ejecuciones de las pruebas.
+        - test_results: Para almacenar los resultados de cada prueba individual.
+        - test_summary: Para almacenar el resumen de la ejecución de las pruebas.
 
-        The following tables will be created if they don't exist:
-            - test_executions: Stores metadata about test execution (e.g., execution name, date).
-            - test_results: Stores detailed results of each test run, including status, method, response details.
-            - test_summary: Stores aggregated summary information about the test execution (e.g., total tests, passed, failed).
-
-        If the tables already exist, this method will do nothing.
+        Si ocurre algún error durante la creación de las tablas, se muestra un mensaje de error.
         """
         try:
             with self._connect() as conn:
                 c = conn.cursor()
 
-                # Create the 'test_executions' table if it doesn't exist
+                # Creación de la tabla 'test_executions'
                 c.execute('''CREATE TABLE IF NOT EXISTS test_executions (
                             ExecutionId INTEGER PRIMARY KEY AUTOINCREMENT,
                             ExecutionName TEXT NOT NULL,
                             ExecutionDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                         )''')
 
-                # Create the 'test_results' table if it doesn't exist
+                # Creación de la tabla 'test_results'
                 c.execute('''CREATE TABLE IF NOT EXISTS test_results (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            ExecutionId INTEGER,  -- Foreign key referencing 'test_executions'
+                            ExecutionId INTEGER,  -- Clave foránea que referencia 'test_executions'
                             TestId TEXT,
                             TestCase TEXT,
                             Status TEXT,
@@ -73,7 +65,7 @@ class DBManager:
                             FOREIGN KEY (ExecutionId) REFERENCES test_executions(ExecutionId)
                         )''')
 
-                # Create the 'test_summary' table if it doesn't exist
+                # Creación de la tabla 'test_summary'
                 c.execute('''CREATE TABLE IF NOT EXISTS test_summary (
                             ExecutionId INTEGER PRIMARY KEY,
                             TotalTests INT,
@@ -85,16 +77,19 @@ class DBManager:
                         )''')
 
         except Exception as e:
-            print(f"Error creating tables: {e}")
+            print(f"Error al crear las tablas: {e}")
 
     def insert_test_result(self, execution_id, test_result):
         """
-        Inserts a test result into the 'test_results' table.
+        Inserta un resultado de prueba en la tabla 'test_results'.
 
-        Args:
-            execution_id (int): The ID of the test execution (foreign key from 'test_executions').
-            test_result (dict): A dictionary containing the test case data to be inserted,
-                                including test ID, status, method, response size, etc.
+        Parámetros:
+        - execution_id (int): ID de la ejecución de la prueba correspondiente.
+        - test_result (dict): Diccionario que contiene los resultados de la prueba.
+          Debe tener las claves: 'TestId', 'TestCase', 'Status', 'Error', 'Method', 'URL',
+          'Endpoint', 'ExpectedStatusCode', 'ActualStatusCode', 'Duration', 'ResponseSize'.
+
+        Si ocurre algún error durante la inserción, se muestra un mensaje de error.
         """
         try:
             with self._connect() as conn:
@@ -109,16 +104,18 @@ class DBManager:
                            test_result['ActualStatusCode'], test_result['Duration'],
                            test_result['ResponseSize']))
         except Exception as e:
-            print(f"Error inserting test result: {e}")
+            print(f"Error al insertar el resultado de la prueba: {e}")
 
     def insert_test_summary(self, execution_id, summary):
         """
-        Inserts a test summary into the 'test_summary' table.
+        Inserta un resumen de la ejecución en la tabla 'test_summary'.
 
-        Args:
-            execution_id (int): The ID of the test execution (foreign key from 'test_executions').
-            summary (dict): A dictionary containing the aggregated test execution summary data,
-                            including total tests, passed tests, failed tests, average duration, and total response size.
+        Parámetros:
+        - execution_id (int): ID de la ejecución de las pruebas correspondiente.
+        - summary (dict): Diccionario que contiene el resumen de la ejecución.
+          Debe tener las claves: 'TotalTests', 'PassedTests', 'FailedTests', 'AvgDuration', 'TotalResponseSize'.
+
+        Si ocurre algún error durante la inserción, se muestra un mensaje de error.
         """
         try:
             with self._connect() as conn:
@@ -129,23 +126,23 @@ class DBManager:
                           (execution_id, summary['TotalTests'], summary['PassedTests'], summary['FailedTests'],
                            summary['AvgDuration'], summary['TotalResponseSize']))
         except Exception as e:
-            print(f"Error inserting test summary: {e}")
+            print(f"Error al insertar el resumen de la prueba: {e}")
 
     def insert_test_execution(self, execution_name):
         """
-        Inserts a new test execution entry into the 'test_executions' table.
+        Inserta una nueva ejecución de prueba en la tabla 'test_executions'.
 
-        Args:
-            execution_name (str): The name or identifier of the test execution.
+        Parámetros:
+        - execution_name (str): Nombre de la ejecución de la prueba.
 
-        Returns:
-            int: The ID of the newly inserted test execution, or None if the insert failed.
+        Retorna:
+        - int: El ID de la ejecución insertada si la operación es exitosa, o None en caso de error.
         """
         try:
             with self._connect() as conn:
                 c = conn.cursor()
                 c.execute('''INSERT INTO test_executions (ExecutionName) VALUES (?)''', (execution_name,))
-                return c.lastrowid  # Return the ID of the last inserted row
+                return c.lastrowid  # Retorna el ID de la última fila insertada (ID de la ejecución)
         except Exception as e:
-            print(f"Error inserting test execution: {e}")
+            print(f"Error al insertar la ejecución de la prueba: {e}")
             return None
