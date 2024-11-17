@@ -10,6 +10,7 @@ from dash.dependencies import Input, Output, State
 # Initialize the Dash app with a Bootstrap theme
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX])
 
+
 # Function to fetch test data from the database
 def fetch_test_data(execution_id=None, page=0, page_size=10):
     """
@@ -36,6 +37,7 @@ def fetch_test_data(execution_id=None, page=0, page_size=10):
         print(f"Error fetching test data: {e}")
         return pd.DataFrame()
 
+
 # Function to fetch execution details from the database
 def fetch_executions():
     """
@@ -53,6 +55,7 @@ def fetch_executions():
     except Exception as e:
         print(f"Error fetching executions: {e}")
         return pd.DataFrame()
+
 
 # Function to get execution name for a given execution ID
 def get_execution_name(execution_id):
@@ -77,6 +80,7 @@ def get_execution_name(execution_id):
         print(f"Error fetching execution name: {e}")
         return None
 
+
 # Function to format test duration as a human-readable string
 def format_duration(duration):
     """
@@ -94,6 +98,7 @@ def format_duration(duration):
         return f"{seconds} sec {milliseconds} ms"
     else:
         return "0 sec 0 ms"
+
 
 # Define the layout of the app (HTML structure using Dash components)
 app.layout = html.Div([
@@ -141,7 +146,7 @@ app.layout = html.Div([
                     html.H4(id="passed-tests", style={"color": "#28A745", "fontSize": "20px", "fontWeight": "bold"}))
             ]), width=2, style={"margin": "0 auto", "borderRadius": "0px"}),
             dbc.Col(dbc.Card([
-                dbc.CardHeader("❌ Pruebas Fallidas", style={"backgroundColor": "#DC3545", "color": "#fff"}),
+                dbc.CardHeader("❌ Pruebas Falladas", style={"backgroundColor": "#DC3545", "color": "#fff"}),
                 dbc.CardBody(
                     html.H4(id="failed-tests", style={"color": "#DC3545", "fontSize": "20px", "fontWeight": "bold"}))
             ]), width=2, style={"margin": "0 auto", "borderRadius": "0px"}),
@@ -230,6 +235,7 @@ app.layout = html.Div([
     ], fluid=True)
 ])
 
+
 # Function to handle NaN values for status codes and safely convert to int
 def safe_int(value):
     """
@@ -241,6 +247,7 @@ def safe_int(value):
         return int(value)
     except ValueError:
         return 0  # Default value in case of invalid data
+
 
 # Callback function to update the report based on selected execution and row clicks
 # noinspection t
@@ -267,8 +274,6 @@ def safe_int(value):
     ],
     [State("test-results-table", "data"), State("test-modal", "is_open")]
 )
-
-
 def update_report(execution_id, selected_rows, close_modal_clicks, table_data, is_open):
     """
     This function updates the entire report including the test statistics,
@@ -286,7 +291,8 @@ def update_report(execution_id, selected_rows, close_modal_clicks, table_data, i
     """
     # Fetch available executions and populate dropdown options
     executions = fetch_executions()
-    execution_options = [{'label': exec['ExecutionName'], 'value': exec['ExecutionId']} for _, exec in executions.iterrows()]
+    execution_options = [{'label': exec['ExecutionName'], 'value': exec['ExecutionId']} for _, exec in
+                         executions.iloc[::-1].iterrows()]
 
     # If an execution is selected, fetch relevant test data
     if execution_id:
@@ -307,7 +313,8 @@ def update_report(execution_id, selected_rows, close_modal_clicks, table_data, i
                 'type': 'bar',
                 'name': 'Estado de las pruebas',
                 'marker': {
-                    'color': ['green' if status == 'PASSED' else 'red' if status == 'FAILED' else 'yellow' for status in status_counts.index]
+                    'color': ['green' if status == 'PASSED' else 'red' if status == 'FAILED' else 'yellow' for status in
+                              status_counts.index]
                 }
             }],
             'layout': {
@@ -323,8 +330,13 @@ def update_report(execution_id, selected_rows, close_modal_clicks, table_data, i
         duration_fig = px.histogram(df_results, x='Duration', title="⏱️ Histograma de Duración de Pruebas", nbins=20)
         duration_fig.update_layout(showlegend=False, xaxis_title=None, yaxis_title=None)
 
-        # Format duration column for the table
-        df_results['Duration'] = df_results['Duration'].apply(format_duration)
+        # Format duration for the table, leaving blank for skipped tests
+        df_results['Duration'] = df_results.apply(
+            lambda row: format_duration(row['Duration']) if row['Status'] != "SKIPPED" else "",
+            axis=1
+        )
+
+        # Prepare table data
         table_data = df_results[['TestId', 'TestCase', 'Status', 'Duration']].to_dict('records')
 
         # Handle test details for a selected row
@@ -338,7 +350,8 @@ def update_report(execution_id, selected_rows, close_modal_clicks, table_data, i
                         plain_text, responses = error_message.split("Got:", 1)
                         expected_text, got_text = plain_text.split("Expected response:", 1)
 
-                        expected_json = json.dumps(eval(expected_text.strip()), indent=2) if expected_text.strip() else "{}"
+                        expected_json = json.dumps(eval(expected_text.strip()),
+                                                   indent=2) if expected_text.strip() else "{}"
                         got_json = json.dumps(eval(responses.strip()), indent=2)
 
                         formatted_error = html.Div([
@@ -388,11 +401,26 @@ def update_report(execution_id, selected_rows, close_modal_clicks, table_data, i
                 html.P(f"Method: {selected_row_data['Method']}"),
                 html.P(f"URL: {selected_row_data['URL']}"),
                 html.P(f"Endpoint: {selected_row_data['Endpoint']}"),
-                html.P(f"Expected Status Code: {safe_int(selected_row_data['ExpectedStatusCode'])}"),
-                html.P(f"Actual Status Code: {safe_int(selected_row_data['ActualStatusCode'])}" if selected_row_data['Status'] != "SKIPPED" else ""),
-                html.P(f"Duration: {selected_row_data['Duration']}" if selected_row_data['Status'] != "SKIPPED" else ""),
-                html.P(f"Response Size: {selected_row_data['ResponseSize']} bytes" if selected_row_data['Status'] != "SKIPPED" else ""),
-                *([html.Div([html.P("Error:"), formatted_error])] if selected_row_data['Status'] != "SKIPPED" and formatted_error else []),
+
+                # Display Expected Status Code only if it doesn't match Actual Status Code
+                html.P(f"Expected Status Code: {safe_int(selected_row_data['ExpectedStatusCode'])}" if safe_int(
+                    selected_row_data['ExpectedStatusCode']) != safe_int(selected_row_data['ActualStatusCode']) else "",
+                       style={"color": "red" if safe_int(selected_row_data['ExpectedStatusCode']) != safe_int(
+                           selected_row_data['ActualStatusCode']) else ""}),
+
+                # Change 'Actual Status Code' to 'Status Code' and rename it
+                html.P(f"Status Code: {safe_int(selected_row_data['ActualStatusCode'])}" if selected_row_data[
+                                                                                                'Status'] != "SKIPPED" else ""),
+
+                # Display Duration and Response Size if not Skipped
+                html.P(
+                    f"Duration: {selected_row_data['Duration']}" if selected_row_data['Status'] != "SKIPPED" else ""),
+                html.P(f"Response Size: {selected_row_data['ResponseSize']} bytes" if selected_row_data[
+                                                                                          'Status'] != "SKIPPED" else ""),
+
+                # Display error message if there's an error and the test is not skipped
+                *([html.Div([html.P("Error:"), formatted_error])] if selected_row_data[
+                                                                         'Status'] != "SKIPPED" and formatted_error else []),
             ])
 
             # If modal is not open, return updated data
@@ -406,6 +434,7 @@ def update_report(execution_id, selected_rows, close_modal_clicks, table_data, i
 
     # Default return if no execution is selected
     return execution_options, 0, 0, 0, 0, 0, {}, {}, {'display': 'none'}, {'display': 'none'}, [], False, None
+
 
 # Run the server to start the app
 if __name__ == "__main__":

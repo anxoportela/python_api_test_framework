@@ -52,6 +52,7 @@ class ExcelReader:
     Attributes:
         file_path (str): The path to the Excel file containing the test data.
     """
+
     def __init__(self, file_path):
         """
         Initializes the ExcelReader with the file path.

@@ -2,6 +2,7 @@ from openpyxl import load_workbook
 from openpyxl.styles import PatternFill, Font, Border, Side, Alignment
 from datetime import datetime
 
+
 def _copy_worksheet(wb, source_sheet_name, new_sheet_name):
     """
     Copies a worksheet from an existing sheet to a new sheet with a specified name.
@@ -130,7 +131,7 @@ class ExcelWriter:
             error_message (str or None): The formatted error message (or None if no error).
         """
         status_cell = row[13]  # The cell containing the status
-        error_cell = row[14]   # The cell containing the error message
+        error_cell = row[14]  # The cell containing the error message
 
         # Set the status and its formatting
         status_cell.value = status
@@ -153,7 +154,7 @@ class ExcelWriter:
             ws (Worksheet): The worksheet to update.
             result (dict): A dictionary containing the test result data.
         """
-        for row in ws.iter_rows(min_row=2, max_col=ws.max_column-1):
+        for row in ws.iter_rows(min_row=2, max_col=ws.max_column - 1):
             if row[0].value == result["TestId"]:
                 status, color, error_message = _get_status_format(result["Status"], result.get("Error"))
                 self._apply_format_to_row(row, status, color, error_message)

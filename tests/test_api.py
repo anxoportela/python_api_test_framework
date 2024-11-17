@@ -5,6 +5,7 @@ from core.db_manager import DBManager
 from core.excel_reader import ExcelReader
 from core.excel_writer import ExcelWriter
 
+
 # Fixture to load test data from an Excel file for the entire test module
 @pytest.fixture(scope="module")
 def test_data():
@@ -22,6 +23,7 @@ def test_data():
     if not data:
         pytest.fail("No se encontraron datos en el archivo Excel.")  # No data found in Excel
     return data
+
 
 # Helper function to prepare headers and authorization based on the test case
 def prepare_headers_and_auth(test_case):
@@ -47,6 +49,7 @@ def prepare_headers_and_auth(test_case):
         auth = None
 
     return headers, auth
+
 
 # Helper function to send API request and measure the time taken for the request
 def send_request_and_measure_time(client, test_case, headers, auth):
@@ -82,6 +85,7 @@ def send_request_and_measure_time(client, test_case, headers, auth):
 
     return response, duration, response_size
 
+
 # Helper function to check if the response matches the expected result
 def check_response(response, test_case):
     """
@@ -103,7 +107,8 @@ def check_response(response, test_case):
         error = f"Expected status code: {test_case.ExpectedStatusCode}, Got: {response.status_code}"
 
     try:
-        response_body = response.json() if 'application/json' in response.headers.get('Content-Type', '') else response.text
+        response_body = response.json() if 'application/json' in response.headers.get('Content-Type',
+                                                                                      '') else response.text
         if response_body != test_case.ExpectedResponse:
             status = "FAILED"
             error = f"Expected response: {test_case.ExpectedResponse}, Got: {response_body}"
@@ -112,6 +117,7 @@ def check_response(response, test_case):
         error = f"Failed to parse response: {str(e)}"
 
     return status, error
+
 
 # Main test function that runs all the test cases and logs the results
 def test_api(test_data):
@@ -132,7 +138,8 @@ def test_api(test_data):
     execution_name = f"TestExecution_{time.strftime('%Y%m%d_%H%M%S')}"  # Unique execution name based on current time
     execution_id = db_manager.insert_test_execution(execution_name)  # Insert the test execution record
     if not execution_id:
-        pytest.fail("No se pudo crear la ejecución en la base de datos.")  # Fail the test if execution could not be logged
+        pytest.fail(
+            "No se pudo crear la ejecución en la base de datos.")  # Fail the test if execution could not be logged
 
     # Lists to hold durations, response sizes, and individual test results
     durations = []
@@ -146,7 +153,8 @@ def test_api(test_data):
             error = "Test skipped (Run = N)"
         else:
             headers, auth = prepare_headers_and_auth(test_case)  # Prepare headers and auth for the request
-            response, duration, response_size = send_request_and_measure_time(client, test_case, headers, auth)  # Send the request
+            response, duration, response_size = send_request_and_measure_time(client, test_case, headers,
+                                                                              auth)  # Send the request
             status, error = check_response(response, test_case)  # Check the response against the expected values
 
         # Prepare the result dictionary

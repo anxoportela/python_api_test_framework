@@ -1,5 +1,6 @@
 import sqlite3
 
+
 class DBManager:
     """
     A class to manage interactions with an SQLite database for storing test execution results.

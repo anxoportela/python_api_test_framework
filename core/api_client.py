@@ -1,6 +1,7 @@
 import requests
 from requests.exceptions import RequestException
 
+
 class APIClient:
     """
     A simple API client that provides a method to send HTTP requests using the `requests` library.
