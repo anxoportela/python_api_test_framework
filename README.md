@@ -1,51 +1,51 @@
-# 🐍 **Python API Test Framework** 🚀
+# 🐍 **Framework de Pruebas de API en Python** 🚀
 
-## 🌟 **Project Overview**
+## 🌟 **Descripción del Proyecto**
 
-Welcome to the **Python API Test Framework**! This is an all-in-one solution for automating API tests, managing test data, and generating interactive reports. Built using Python and a variety of modern libraries, this framework allows you to:
+¡Bienvenido al **Framework de Pruebas de API en Python**! Esta es una solución todo en uno para automatizar las pruebas de API, gestionar datos de prueba y generar informes interactivos. Construido con Python y varias bibliotecas modernas, este framework te permite:
 
-- **Test** RESTful APIs.
-- **Manage** test data from Excel.
-- **Store** results in a database (SQLite).
-- **Visualize** test results with a web-based dashboard.
-
----
-
-## ⚙️ **Features**
-
-✨ **Key Features**:
-
-- 🧑‍💻 **API Client**: Sends HTTP requests (GET, POST, PUT, DELETE) to test APIs.
-- 📊 **Excel Reader & Writer**: Reads test data from `.xlsx` files and writes results back to Excel.
-- 🗃️ **Database Manager**: Stores test results in an SQLite database.
-- 📈 **Test Reporting Dashboard**: Displays results in a Dash-based web application.
-- 📅 **Comprehensive Reporting**:
-  - **Execution Summary**: Passed, Failed, Skipped tests.
-  - **Status Distribution**: Visualizes the breakdown of test statuses.
-  - **Duration Histograms**: Shows the distribution of test durations.
-  - **Results Table**: Provides detailed test result logs.
+- **Probar** APIs RESTful.
+- **Gestionar** los datos de prueba desde archivos Excel.
+- **Almacenar** los resultados en una base de datos (SQLite).
+- **Visualizar** los resultados de las pruebas con un panel de control basado en dash.
 
 ---
 
-## 🚀 **Installation**
+## ⚙️ **Características**
 
-### **1. Install Dependencies**
+✨ **Características clave**:
 
-The framework requires Python 3.6+ and several dependencies. To get started, clone the repository and install the required packages from the `requirements.txt`.
+- 🧑‍💻 **Cliente de API**: Envía solicitudes HTTP (GET, POST, PUT, DELETE) para probar las APIs.
+- 📊 **Lector y Escritor de Excel**: Lee los datos de prueba desde archivos `.xlsx` y escribe los resultados de vuelta en Excel.
+- 🗃️ **Gestor de Base de Datos**: Almacena los resultados de las pruebas en una base de datos SQLite.
+- 📈 **Panel de Informes de Pruebas**: Muestra los resultados en una aplicación web basada en Dash.
+- 📅 **Informes Complejos**:
+  - **Resumen de Ejecución**: Pruebas Pasadas, Falladas y Saltadas.
+  - **Distribución de Estados**: Visualiza la distribución de los estados de las pruebas.
+  - **Histogramas de Duración**: Muestra la distribución de las duraciones de las pruebas.
+  - **Tabla de Resultados**: Proporciona un registro detallado de los resultados de las pruebas.
+
+---
+
+## 🚀 **Instalación**
+
+### **1. Instalar Dependencias**
+
+El framework requiere Python 3.12+ y varias dependencias. Para comenzar, clona el repositorio e instala los paquetes necesarios desde el archivo `requirements.txt`.
 
 ```bash
 git clone https://github.com/anxoportela/python_api_test_framework.git
 cd python-api-test-framework
 ```
 
-#### **2. Set up a Virtual Environment (optional but recommended)**
+#### **2. Configurar un Entorno Virtual (opcional, pero recomendado)**
 
 ```bash
 python3 -m venv venv
-source venv/bin/activate  # On Windows use venv\Scripts\activate
+source venv/bin/activate  # En Windows usa venv\Scripts\activate
 ```
 
-#### **3. Install the Required Dependencies**
+#### **3. Instalar las Dependencias Requeridas**
 
 ```bash
 pip install -r requirements.txt
@@ -53,143 +53,143 @@ pip install -r requirements.txt
 
 ---
 
-## 🧪 **Running Tests**
+## 🧪 **Ejecutar Pruebas**
 
-Before launching the Dash dashboard, it's important to run the tests to generate the data that will be visualized.
+Antes de lanzar el panel de Dash, es importante ejecutar las pruebas para generar los datos que se visualizarán.
 
-To run the framework's tests, navigate to the root directory and execute the following:
+Para ejecutar las pruebas del framework, navega hasta el directorio raíz y ejecuta lo siguiente:
 
 ```bash
 pytest -s
 ```
 
-This will run the tests and provide feedback on the success of each test case.
+Esto ejecutará las pruebas y proporcionará retroalimentación sobre el éxito de los casos de prueba.
 
 ---
 
-## 🚀 **Launch the Dash Dashboard** 💻
+## 🚀 **Lanzar el Panel de Control de Dash** 💻
 
-Once the tests are run and results are generated, you can launch the Dash-based reporting dashboard. This will display your test results in an interactive, web-based interface.
+Una vez que las pruebas se han ejecutado y los resultados se han generado, puedes lanzar el panel de informes basado en Dash. Este mostrará los resultados de tus pruebas en una interfaz web interactiva.
 
 ```bash
 python web/app.py
 ```
 
-Open your browser and go to `http://127.0.0.1:8050/` to view the dashboard.
+Abre tu navegador y accede a `http://127.0.0.1:8050/` para ver el panel.
 
 ---
 
-## 📊 **Test Data Format** (Excel)
+## 📊 **Formato de los Datos de Prueba** (Excel)
 
-The framework reads the test data from an Excel file (`test_data.xlsx`) with the following columns in order:
+El framework lee los datos de prueba desde un archivo Excel (`test_data.xlsx`) con las siguientes columnas en orden:
 
-| Column Name            | Description                                                            |
-|------------------------|------------------------------------------------------------------------|
-| **TestId**             | Unique identifier for the test case.                                   |
-| **TestCase**           | Name or description of the test case.                                  |
-| **Run**                | Whether the test should be run (`Y`/`N`).                              |
-| **Method**             | HTTP method to be used (GET, POST, PUT, DELETE).                       |
-| **URL**                | The base URL of the API being tested.                                  |
-| **Endpoint**           | The specific endpoint to test, relative to the base URL.               |
-| **Authorization**      | String of Authorization required (e.g., `Bearer`, `Basic`, or `None`). |
-| **User**               | Username (if needed for authentication).                               |
-| **Password**           | Password (if needed for authentication).                               |
-| **Headers**            | HTTP headers in JSON format (optional).                                |
-| **Body**               | Request body in JSON format (for POST/PUT requests).                   |
-| **ExpectedStatusCode** | The expected HTTP status code (e.g., `200`, `404`).                    |
-| **ExpectedResponse**   | The expected response body (optional, can be empty).                   |
-| **Status**             | The result of the test (`Passed`, `Failed`, or `Skipped`).             |
-| **Error**              | Any error message encountered during the test (optional).              |
-
----
-
-### 🧑‍💻 **How Test Data is Used**
-
-- **TestCase**: The description of the test case is logged for clarity.
-- **Run**: This column determines if the test case should be executed. If `Run` is set to `N`, the test is skipped.
-- **Method**: Defines the HTTP request method to use (e.g., `GET`, `POST`).
-- **URL + Endpoint**: Combined, these form the complete URL for the request. The base `URL` and the specific `Endpoint` will be joined programmatically.
-- **Authorization, User, Password**: These are used for authenticated requests (e.g., with Bearer tokens or Basic Authentication).
-- **Headers & Body**: If required, HTTP headers and request bodies are sent as part of the API call.
-- **ExpectedStatusCode & ExpectedResponse**: The actual response is compared against these values to determine if the test passes or fails.
-- **Status**: After each test run, this column is updated with the test result.
-- **Error**: If the test fails or an error occurs, the error message is logged here for further analysis.
+| Nombre de Columna      | Descripción                                                         |
+|------------------------|---------------------------------------------------------------------|
+| **TestId**             | Identificador único del caso de prueba.                             |
+| **TestCase**           | Nombre o descripción del caso de prueba.                            |
+| **Run**                | Indica si la prueba debe ejecutarse (`Y`/`N`).                      |
+| **Method**             | Método HTTP a utilizar (GET, POST, PUT, DELETE).                    |
+| **URL**                | La URL base de la API que se está probando.                         |
+| **Endpoint**           | El endpoint específico a probar, relativo a la URL base.            |
+| **Authorization**      | Cadena de autorización requerida (ej., `Bearer`, `Basic` o `None`). |
+| **User**               | Nombre de usuario (si es necesario para la autenticación).          |
+| **Password**           | Contraseña (si es necesario para la autenticación).                 |
+| **Headers**            | Cabeceras HTTP en formato JSON (opcional).                          |
+| **Body**               | Cuerpo de la solicitud en formato JSON (para peticiones POST/PUT).  |
+| **ExpectedStatusCode** | El código de estado HTTP esperado (ej., `200`, `404`).              |
+| **ExpectedResponse**   | El cuerpo de la respuesta esperado (opcional, puede estar vacío).   |
+| **Status**             | El resultado de la prueba (`Passed`, `Failed` o `Skipped`).         |
+| **Error**              | Cualquier mensaje de error encontrado durante la prueba (opcional). |
 
 ---
 
-## 📁 **Project Structure**
+### 🧑‍💻 **Cómo se Usan los Datos de Prueba**
+
+- **TestCase**: La descripción del caso de prueba se registra para mayor claridad.
+- **Run**: Esta columna determina si el caso de prueba debe ejecutarse. Si `Run` está establecido en `N`, la prueba se omite.
+- **Method**: Define el método de solicitud HTTP a utilizar (ej., `GET`, `POST`).
+- **URL + Endpoint**: Combinados, estos forman la URL completa para la solicitud. La URL base y el `Endpoint` específico se unirán programáticamente.
+- **Authorization, User, Password**: Se utilizan para solicitudes autenticadas (ej., con tokens Bearer o Autenticación Básica).
+- **Headers & Body**: Si es necesario, las cabeceras HTTP y los cuerpos de las solicitudes se envían como parte de la llamada a la API.
+- **ExpectedStatusCode & ExpectedResponse**: La respuesta real se compara con estos valores para determinar si la prueba pasa o falla.
+- **Status**: Después de cada ejecución de prueba, esta columna se actualiza con el resultado de la prueba.
+- **Error**: Si la prueba falla o ocurre un error, el mensaje de error se registra aquí para un análisis posterior.
+
+---
+
+## 📁 **Estructura del Proyecto**
 
 ```bash
 python_api_test_framework/
 │
-├── core/                    # Core logic for API requests and test data management
-│   ├── __init__.py          # Core package initialization
-│   ├── api_client.py        # Handles API requests
-│   ├── excel_reader.py      # Reads test data from Excel files
-│   ├── excel_writer.py      # Writes test results to Excel files
-│   ├── test_data_model.py   # Defines the test data model
-│   ├── db_manager.py        # Manages database interactions
+├── core/                    # Lógica principal para solicitudes de API y gestión de datos de prueba
+│   ├── __init__.py          # Inicialización del paquete principal
+│   ├── api_client.py        # Maneja las solicitudes de API
+│   ├── excel_reader.py      # Lee los datos de prueba desde archivos Excel
+│   ├── excel_writer.py      # Escribe los resultados de las pruebas en archivos Excel
+│   ├── test_data_model.py   # Define el modelo de datos de prueba
+│   ├── db_manager.py        # Maneja las interacciones con la base de datos
 │
-├── data/                    # Stores test data and configuration files
-│   ├── __init__.py          # Data package initialization
-│   ├── test_data.xlsx       # Sample test data
+├── data/                    # Almacena los datos de prueba y archivos de configuración
+│   ├── __init__.py          # Inicialización del paquete de datos
+│   ├── test_data.xlsx       # Datos de prueba de ejemplo
 │
-├── reports/                 # Stores generated reports and test results
-│   ├── __init__.py          # Reports package initialization
-│   ├── results.db           # SQLite database for test results
+├── reports/                 # Almacena los informes generados y los resultados de las pruebas
+│   ├── __init__.py          # Inicialización del paquete de informes
+│   ├── results.db           # Base de datos SQLite para los resultados de las pruebas
 │
-├── tests/                   # Unit and functional tests for the framework
-│   ├── __init__.py          # Test package initialization
-│   └── test_api.py          # Tests launcher for the framework
+├── tests/                   # Pruebas unitarias y funcionales para el framework
+│   ├── __init__.py          # Inicialización del paquete de pruebas
+│   └── test_api.py          # Lanzador de pruebas para el framework
 │
-├── web/                     # Dash web application for test reports
-│   ├── __init__.py          # Web package initialization
-│   ├── app.py               # Dash app for visualizing test reports
+├── web/                     # Aplicación web Dash para los informes de pruebas
+│   ├── __init__.py          # Inicialización del paquete web
+│   ├── app.py               # Aplicación Dash para visualizar los informes de pruebas
 │
-├── config.py                # Global configuration settings
-├── requirements.txt         # List of required dependencies
+├── config.py                # Configuración global del proyecto
+├── requirements.txt         # Lista de dependencias necesarias
 ```
 
 ---
 
-## 🛠️ **How It Works**
+## 🛠️ **Cómo Funciona**
 
-### **API Client** 📡
+### **Cliente de API** 📡
 
-The `api_client.py` handles API requests and responses. It supports multiple HTTP methods (GET, POST, PUT, DELETE) and stores the results, including status codes and response times.
+El archivo `api_client.py` maneja las solicitudes y respuestas de la API. Soporta varios métodos HTTP (GET, POST, PUT, DELETE) y almacena los resultados, incluidos los códigos de estado y los tiempos de respuesta.
 
-### **Test Data Management** 📂
+### **Gestión de Datos de Prueba** 📂
 
-Test data is read from an Excel file (`test_data.xlsx`) using the `excel_reader.py` script. This data typically includes API endpoints, request methods, and expected results. After running the tests, results are written back to an Excel file using `excel_writer.py`.
+Los datos de prueba se leen desde un archivo Excel (`test_data.xlsx`) utilizando el script `excel_reader.py`. Estos datos incluyen típicamente los endpoints de la API, los métodos de solicitud y los resultados esperados. Después de ejecutar las pruebas, los resultados se escriben de nuevo en un archivo Excel utilizando `excel_writer.py`.
 
-### **Database Management** 🗄️
+### **Gestión de Base de Datos** 🗄️
 
-Test results are saved in an SQLite database (`results.db`). The `db_manager.py` file takes care of inserting and retrieving test results.
+Los resultados de las pruebas se guardan en una base de datos SQLite (`results.db`). El archivo `db_manager.py` se encarga de insertar y recuperar los resultados de las pruebas.
 
-### **Reporting Dashboard** 📊
+### **Panel de Informes** 📊
 
-The `web/app.py` file serves as the entry point for the Dash-based web dashboard. This dashboard provides a comprehensive view of test results, including:
+El archivo `web/app.py` sirve como punto de entrada para el panel web basado en Dash. Este panel proporciona una vista completa de los resultados de las pruebas, incluyendo:
 
-- **Test Statistics**: Overview of tests that passed, failed, and were skipped.
-- **Graphs**:
-  - **Status Distribution**: Displays a bar chart of test statuses (Passed, Failed, Skipped).
-  - **Duration Distribution**: Visualizes the distribution of test durations.
-- **Results Table**: A detailed table of individual test results, including status, duration, and additional logs.
-
----
-
-## 📄 **License**
-
-This project is licensed under the **MIT License**. For more details, see the [LICENSE](LICENSE) file.
+- **Estadísticas de Pruebas**: Resumen de las pruebas que pasaron, fallaron y fueron omitidas.
+- **Gráficos**:
+  - **Distribución de Estados**: Muestra un gráfico de barras de los estados de las pruebas (Aprobadas, Fallidas, Omitidas).
+  - **Distribución de Duraciones**: Visualiza la distribución de las duraciones de las pruebas.
+  - **Tabla de Resultados**: Una tabla detallada de los resultados individuales de las pruebas, que incluye el estado, la duración y registros adicionales.
 
 ---
 
-## 📧 **Contact**
+## 📄 **Licencia**
 
-For any issues, questions, or suggestions, feel free to reach out to the project maintainers:
-
-**Email**: hello@anxoportela.dev
+Este proyecto está bajo la **Licencia MIT**. Para más detalles, consulta el archivo [LICENSE](LICENSE).
 
 ---
 
-### 🎉 **Enjoy using the Python API Test Framework!** 🎉
+## 📧 **Contacto**
+
+Para cualquier problema, pregunta o sugerencia, no dudes en contactar con los mantenedores del proyecto:
+
+**Correo electrónico**: [hello@anxoportela.dev](mailto:hello@anxoportela.dev)
+
+---
+
+### 🎉 **¡Disfruta utilizando el Framework de Pruebas de API en Python!** 🎉
