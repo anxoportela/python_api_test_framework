@@ -20,10 +20,10 @@ Welcome to the **Python API Test Framework**! This is an all-in-one solution for
 - 🗃️ **Database Manager**: Stores test results in an SQLite database.
 - 📈 **Test Reporting Dashboard**: Displays results in a Dash-based web application.
 - 📅 **Comprehensive Reporting**:
-    - **Execution Summary**: Passed, Failed, Skipped tests.
-    - **Status Distribution**: Visualizes the breakdown of test statuses.
-    - **Duration Histograms**: Shows the distribution of test durations.
-    - **Results Table**: Provides detailed test result logs.
+  - **Execution Summary**: Passed, Failed, Skipped tests.
+  - **Status Distribution**: Visualizes the breakdown of test statuses.
+  - **Duration Histograms**: Shows the distribution of test durations.
+  - **Results Table**: Provides detailed test result logs.
 
 ---
 
@@ -119,7 +119,7 @@ The framework reads the test data from an Excel file (`test_data.xlsx`) with the
 
 ## 📁 **Project Structure**
 
-```
+```bash
 python_api_test_framework/
 │
 ├── core/                    # Core logic for API requests and test data management
@@ -155,21 +155,25 @@ python_api_test_framework/
 ## 🛠️ **How It Works**
 
 ### **API Client** 📡
+
 The `api_client.py` handles API requests and responses. It supports multiple HTTP methods (GET, POST, PUT, DELETE) and stores the results, including status codes and response times.
 
 ### **Test Data Management** 📂
+
 Test data is read from an Excel file (`test_data.xlsx`) using the `excel_reader.py` script. This data typically includes API endpoints, request methods, and expected results. After running the tests, results are written back to an Excel file using `excel_writer.py`.
 
 ### **Database Management** 🗄️
+
 Test results are saved in an SQLite database (`results.db`). The `db_manager.py` file takes care of inserting and retrieving test results.
 
 ### **Reporting Dashboard** 📊
+
 The `web/app.py` file serves as the entry point for the Dash-based web dashboard. This dashboard provides a comprehensive view of test results, including:
 
 - **Test Statistics**: Overview of tests that passed, failed, and were skipped.
 - **Graphs**:
-    - **Status Distribution**: Displays a bar chart of test statuses (Passed, Failed, Skipped).
-    - **Duration Distribution**: Visualizes the distribution of test durations.
+  - **Status Distribution**: Displays a bar chart of test statuses (Passed, Failed, Skipped).
+  - **Duration Distribution**: Visualizes the distribution of test durations.
 - **Results Table**: A detailed table of individual test results, including status, duration, and additional logs.
 
 ---
