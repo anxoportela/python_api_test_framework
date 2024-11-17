@@ -122,7 +122,7 @@ El framework lee los datos de prueba desde un archivo Excel (`test_data.xlsx`) c
 ```bash
 python_api_test_framework/
 │
-├── core/                    # Lógica principal para solicitudes de API y gestión de datos de prueba
+├── core/                    # Lógica para solicitudes API y gestión de datos de prueba
 │   ├── __init__.py          # Inicialización del paquete principal
 │   ├── api_client.py        # Maneja las solicitudes de API
 │   ├── excel_reader.py      # Lee los datos de prueba desde archivos Excel
@@ -130,7 +130,7 @@ python_api_test_framework/
 │   ├── test_data_model.py   # Define el modelo de datos de prueba
 │   ├── db_manager.py        # Maneja las interacciones con la base de datos
 │
-├── data/                    # Almacena los datos de prueba y archivos de configuración
+├── data/                    # Almacena los datos de prueba
 │   ├── __init__.py          # Inicialización del paquete de datos
 │   ├── test_data.xlsx       # Datos de prueba de ejemplo
 │
@@ -142,12 +142,15 @@ python_api_test_framework/
 │   ├── __init__.py          # Inicialización del paquete de pruebas
 │   └── test_api.py          # Lanzador de pruebas para el framework
 │
-├── web/                     # Aplicación web Dash para los informes de pruebas
+├── web/                     # Aplicación web para los informes de pruebas
 │   ├── __init__.py          # Inicialización del paquete web
 │   ├── app.py               # Aplicación Dash para visualizar los informes de pruebas
 │
 ├── config.py                # Configuración global del proyecto
 ├── requirements.txt         # Lista de dependencias necesarias
+├── LICENSE                  # Licencia del proyecto
+├── README.md                # Estas aquí ahora mismo 😅
+
 ```
 
 ---
@@ -160,7 +163,7 @@ El archivo `api_client.py` maneja las solicitudes y respuestas de la API. Soport
 
 #### 📂 **Gestión de Datos de Prueba**
 
-Los datos de prueba se leen desde un archivo Excel (`test_data.xlsx`) utilizando el script `excel_reader.py`. Estos datos incluyen típicamente los endpoints de la API, los métodos de solicitud y los resultados esperados. Después de ejecutar las pruebas, los resultados se escriben de nuevo en un archivo Excel utilizando `excel_writer.py`.
+Los datos de prueba se leen desde un archivo Excel (`test_data.xlsx`) utilizando el script `excel_reader.py`. Estos datos incluyen típicamente los endpoints de la API, los métodos de solicitud y los resultados esperados. Después de ejecutar las pruebas, los resultados se escriben de nuevo en una nueva hoja del Excel utilizando `excel_writer.py`.
 
 #### 🗄️ **Gestión de Base de Datos**
 
