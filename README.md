@@ -60,7 +60,7 @@ Before launching the Dash dashboard, it's important to run the tests to generate
 To run the framework's tests, navigate to the root directory and execute the following:
 
 ```bash
-pytest
+pytest -s
 ```
 
 This will run the tests and provide feedback on the success of each test case.
