@@ -152,7 +152,7 @@ class ExcelWriter:
                 status, color, error_message = _get_status_format(result["Status"], result.get("Error"))
                 self._apply_format_to_row(row, status, color, error_message)
 
-    def update_results(self, results):
+    def update_results(self, results, execution_name):
         """
         Actualiza los resultados de las pruebas en el archivo Excel, tanto en la hoja principal como en una nueva hoja de registro.
 
@@ -165,8 +165,6 @@ class ExcelWriter:
                 return
 
             wb = load_workbook(self.file_path)
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            new_sheet_name = f"TestSuite_{timestamp}"
 
             # Comprobamos si la hoja principal 'TestSuite' existe
             if "TestSuite" in wb.sheetnames:
@@ -179,7 +177,7 @@ class ExcelWriter:
                 return
 
             # Copiamos la hoja 'TestSuite' y la renombramos con la marca de tiempo
-            new_sheet = _copy_worksheet(wb, "TestSuite", new_sheet_name)
+            new_sheet = _copy_worksheet(wb, "TestSuite", execution_name)
             if new_sheet:
                 # Actualizamos los resultados en la nueva hoja
                 for result in results:
@@ -187,6 +185,6 @@ class ExcelWriter:
 
             # Guardamos el archivo Excel con las actualizaciones
             wb.save(self.file_path)
-            print(f"Resultados actualizados en 'TestSuite' y en la nueva hoja '{new_sheet_name}'.")
+            print(f"Resultados actualizados en 'TestSuite' y en la nueva hoja '{execution_name}'.")
         except Exception as e:
             print(f"Error actualizando el archivo Excel: {e}")

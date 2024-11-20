@@ -201,4 +201,4 @@ def test_api(test_data):
     print(f"Tamaño total de respuestas: {summary['TotalResponseSize']} bytes")
 
     # Actualiza los resultados en el archivo Excel
-    ExcelWriter(config.EXCEL_PATH).update_results(results)
+    ExcelWriter(config.EXCEL_PATH).update_results(results, execution_name)

@@ -26,7 +26,7 @@ class APIData(BaseModel):
 
     Run: str
     """
-    Indica si la prueba debe ejecutarse o no (por ejemplo, 'Sí' o 'No').
+    Indica si la prueba debe ejecutarse o no (Y/N).
 
     Tipo: str
     """
